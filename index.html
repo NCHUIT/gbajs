@@ -28,7 +28,7 @@ var debug = null;
 
 try {
 	gba = new GameBoyAdvance();
-	gba.keypad.eatInput = true;
+	gba.keypad.eatInput = false;
 	gba.setLogger(function(level, error) {
 		console.log(error);
 		gba.pause();
@@ -282,6 +282,14 @@ document.addEventListener('webkitfullscreenchange', function() {
 		canvas.removeAttribute('style');
 	}
 }, false);
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io();
+	socket.on('key', function(event) {
+		// console.log(event);
+		gba.keypad.keyboardHandler(event);
+	});
 </script>
 </head>
 <body>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+  function sendKey(event) {
+    var keyEvent = {keyCode: event.keyCode, type: event.type};
+    // console.log(keyEvent);
+    socket.emit('key', keyEvent);
+  }
+  window.addEventListener("keydown", sendKey);
+  window.addEventListener("keyup", sendKey);
+</script>
+<body>
+  
+</body>
+</html>

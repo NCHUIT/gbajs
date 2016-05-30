@@ -1,0 +1,32 @@
+version: '2'
+volumes:
+    dev_volume:
+        driver: local
+services:
+    main: &main
+        build: .
+        ports:
+         - "80:3000"
+    dev:
+        <<: *main
+        volumes_from:
+         - dev_volume
+        volumes:
+         - .:/workspace
+        entrypoint: []
+        command: bash
+    rsync:
+        build:
+            context: ./server
+            dockerfile: rsync.dockerfile
+        volumes_from:
+         - dev_volume
+        volumes:
+         - .:/workspace
+    dev_volume:
+        build: .
+        ports: []
+        volumes:
+         - dev_volume:/usr/src/app
+        command: echo true
+
