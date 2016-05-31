@@ -285,11 +285,22 @@ document.addEventListener('webkitfullscreenchange', function() {
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-	var socket = io();
-	socket.on('key', function(event) {
-		// console.log(event);
-		gba.keypad.keyboardHandler(event);
-	});
+	var socket = io(), room_name;
+	
+	function join() {
+		if(room_name) socket.emit('join', room_name);
+	}
+	function join_and_run(file) {
+		room_name = prompt("Room name:");
+		run(file);
+		document.getElementById('room_name').innerHTML = "Room name: " + room_name;
+		socket.on('connect', join);
+		join();
+		socket.on('key', function(event) {
+			// console.log(event);
+			gba.keypad.keyboardHandler(event);
+		});
+	}
 	if(navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) && confirm("Go to controller side?"))
 		document.location = "controller.html"
 </script>
@@ -299,8 +310,8 @@ document.addEventListener('webkitfullscreenchange', function() {
 <section id="controls">
 	<div id="preload">
 		<a href="controller.html"><button>Controller Side</button></a>
-		<button class="bigbutton" id="select" onclick="document.getElementById('loader').click()">SELECT</button>
-		<input id="loader" type="file" accept=".gba" onchange="run(this.files[0]);">
+		<button class="bigbutton" id="select" onclick="document.getElementById('loader').click()">SELECT ROM</button>
+		<input id="loader" type="file" accept=".gba" onchange="join_and_run(this.files[0]);">
 		<button onclick="document.getElementById('saveloader').click()">Upload Savegame</button>
 		<input id="saveloader" type="file" onchange="uploadSavedataPending(this.files[0]);">
 	</div>
@@ -318,6 +329,7 @@ document.addEventListener('webkitfullscreenchange', function() {
 			<p>Sound</p>
 			<input type="range" min="0" max="1" value="1" step="any" onchange="setVolume(this.value)" oninput="setVolume(this.value)">
 		</div>
+		<p id="room_name"></p>
 		<p id="openDebug" onclick="enableDebug()">Debugger</p>
 	</div>
 </section>

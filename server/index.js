@@ -8,11 +8,16 @@ app.use(express.static('.'));
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  socket.on('key', function(event) {
-    if(event.keyCode && event.type) {
-      socket.broadcast.emit('key', event);
-      console.log(`Sending ${event.type} '${event.keyCode}'`);
-    }
+  socket.on('join', function(room_name) {
+    socket.join(room_name);
+    console.log(`a user joined ${room_name}`);
+
+    socket.on('key', function(event) {
+      if(event.keyCode && event.type) {
+        io.in(room_name).emit('key', event);
+        console.log(`Sending ${event.type} '${event.keyCode}'`);
+      }
+    });
   });
 });
 

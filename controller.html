@@ -7,7 +7,10 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<script type='text/javascript' src='lib/gamecontroller.min.js'></script>
 	<script>
-		var socket = io();
+		var socket = io(), room_name;
+		function join() {
+			if(room_name) socket.emit('join', room_name);
+		}
 		function sendKey(event) {
 			var keyEvent = {keyCode: event.keyCode, type: event.type};
 			// console.log("Sending", keyEvent);
@@ -16,6 +19,9 @@
 		window.addEventListener("keydown", sendKey);
 		window.addEventListener("keyup", sendKey);
 		
+		room_name = prompt("Room name:")
+		socket.on('connect', join);
+		join();
 		if(!navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i))
 			alert("Keybindings for keyboard:\n  z: A\n  x: B\n  a: L\n  s: R\n  Enter: Start\n  '\\':Select");
 		// virtual gamepad for mobile
