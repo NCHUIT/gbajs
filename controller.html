@@ -4,18 +4,111 @@
   <meta charset="UTF-8">
   <title></title>
 </head>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
-  function sendKey(event) {
-    var keyEvent = {keyCode: event.keyCode, type: event.type};
-    // console.log(keyEvent);
-    socket.emit('key', keyEvent);
-  }
-  window.addEventListener("keydown", sendKey);
-  window.addEventListener("keyup", sendKey);
-</script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type='text/javascript' src='lib/gamecontroller.min.js'></script>
+	<script>
+		var socket = io();
+		function sendKey(event) {
+			var keyEvent = {keyCode: event.keyCode, type: event.type};
+			// console.log("Sending", keyEvent);
+			socket.emit('key', keyEvent);
+		}
+		window.addEventListener("keydown", sendKey);
+		window.addEventListener("keyup", sendKey);
+		
+		if(!navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i))
+			alert("Keybindings for keyboard:\n  z: A\n  x: B\n  a: L\n  s: R\n  Enter: Start\n  '\\':Select");
+		// virtual gamepad for mobile
+		var KEYCODE_LEFT = 37, KEYCODE_UP = 38, KEYCODE_RIGHT = 39, KEYCODE_DOWN = 40, KEYCODE_START = 13, KEYCODE_SELECT = 220, KEYCODE_A = 90, KEYCODE_B = 88, KEYCODE_L = 65, KEYCODE_R = 83;
+		window.onload = function initGamepad() {
+			var canvas = document.getElementById("canvas");
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			if(canvas.height > canvas.width){
+				alert("Please use Landscape and refresh\n請打橫並重新整理網頁！");
+				return;
+			}
+			var dpadX = 0.0, dpadY = 0.0, dpadState = false;
+			function genButtonSetting(x, y, label, bgColor, keyCode, radius) {
+				return {
+					offset: { x: x, y: y },
+					label: label,
+					radius: radius || '10%',
+					stroke: 2,
+					fontSize: 20,
+					backgroundColor: bgColor,
+					fontColor: '#fff',
+					touchStart: function() {
+						sendKey({keyCode: keyCode, type: "keydown"});
+					},
+					touchEnd: function() {
+						sendKey({keyCode: keyCode, type: "keyup"});
+					}
+				};
+			}
+			function dpadChanged(dpadReleased) {
+				var newDpadState;
+				if(Math.max(Math.abs(dpadX), Math.abs(dpadY)) > 0.2 && dpadReleased !== true) {
+					var rightbottom = (dpadX > dpadY), rightTop = (dpadX + dpadY > 0);
+					if(rightbottom)
+						if(rightTop)
+							newDpadState = KEYCODE_RIGHT;
+						else
+							newDpadState = KEYCODE_DOWN;
+					else
+						if(rightTop)
+							newDpadState = KEYCODE_UP;
+						else
+							newDpadState = KEYCODE_LEFT;
+				}
+				else
+					newDpadState = false;
+				
+				// console.log("dpadState", dpadState, "newDpadState", newDpadState);
+				if(newDpadState !== dpadState) {
+					if(dpadState)
+						sendKey({keyCode: dpadState, type: "keyup"});
+					if(newDpadState)
+						sendKey({keyCode: newDpadState, type: "keydown"});
+					dpadState = newDpadState;
+				}
+			}
+			GameController.init({
+				canvas: 'canvas',
+				left: {
+					type: 'joystick',
+					position: {
+						top: '45%',
+						left: '25%',
+					},
+					joystick: {
+						radius: Math.min(canvas.height * 0.4, canvas.width * 0.2),
+						touchStart: function() { dpadChanged(); },
+						touchEnd: function() { dpadChanged(true); },
+						touchMove: function(e) { dpadX = e.normalizedX; dpadY = e.normalizedY; dpadChanged(); },
+					}
+				},
+				right: {
+					type: 'buttons',
+					position: { right: '25%', bottom: '55%' },
+					buttons: [
+						genButtonSetting('-5%', '-27.5%', 'A', 'green', KEYCODE_A, '15%'),
+						genButtonSetting('-5%', '3%', 'B', 'red', KEYCODE_B, '15%'),
+						genButtonSetting('-20%', '-40%', 'L', 'yellow', KEYCODE_L),
+						genButtonSetting('20%', '-40%', 'R', 'yellow', KEYCODE_R),
+						genButtonSetting('-20%', '25%', 'Start', 'blue', KEYCODE_START),
+						genButtonSetting('20%', '25%', 'Select', 'blue', KEYCODE_SELECT),
+					]
+				}
+			});
+		};
+	</script>
+	<style>
+		body {
+		  background: #765490;
+		}
+	</style>
 <body>
-  
+<canvas id="canvas"></canvas> 
 </body>
 </html>

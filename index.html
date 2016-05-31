@@ -290,12 +290,15 @@ document.addEventListener('webkitfullscreenchange', function() {
 		// console.log(event);
 		gba.keypad.keyboardHandler(event);
 	});
+	if(navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) && confirm("Go to controller side?"))
+		document.location = "controller.html"
 </script>
 </head>
 <body>
 <canvas id="screen" width="480" height="320"></canvas>
 <section id="controls">
 	<div id="preload">
+		<a href="controller.html"><button>Controller Side</button></a>
 		<button class="bigbutton" id="select" onclick="document.getElementById('loader').click()">SELECT</button>
 		<input id="loader" type="file" accept=".gba" onchange="run(this.files[0]);">
 		<button onclick="document.getElementById('saveloader').click()">Upload Savegame</button>
