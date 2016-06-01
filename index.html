@@ -293,7 +293,7 @@ document.addEventListener('webkitfullscreenchange', function() {
 	function join_and_run(file) {
 		room_name = prompt("Room name:");
 		run(file);
-		document.getElementById('room_name').innerHTML = "Room name: " + room_name;
+		document.getElementById('room_name').innerHTML = "Room: " + room_name;
 		socket.on('connect', join);
 		join();
 		socket.on('key', function(event) {
@@ -302,14 +302,14 @@ document.addEventListener('webkitfullscreenchange', function() {
 		});
 	}
 	if(navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) && confirm("Go to controller side?"))
-		document.location = "controller.html"
+		document.location = "controller/index.html"
 </script>
 </head>
 <body>
 <canvas id="screen" width="480" height="320"></canvas>
 <section id="controls">
 	<div id="preload">
-		<a href="controller.html"><button>Controller Side</button></a>
+		<a href="controller/index.html"><button>Controller Side</button></a>
 		<button class="bigbutton" id="select" onclick="document.getElementById('loader').click()">SELECT ROM</button>
 		<input id="loader" type="file" accept=".gba" onchange="join_and_run(this.files[0]);">
 		<button onclick="document.getElementById('saveloader').click()">Upload Savegame</button>

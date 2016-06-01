@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title></title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type='text/javascript' src='gamecontroller.min.js'></script>
+    <script type='text/javascript' src='controller.js'></script>
+    <style>
+      body {
+	background: #765490;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	text-align: center;
+      }
+      canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+      }
+    </style>
+</head>
+<body>
+  <div id="msg_box">
+    <p id="banned"></p>
+    <p id="info"></p>
+    <p id="room_name"></p>
+  </div>
+  <canvas id="canvas"></canvas> 
+</body>
+</html>
