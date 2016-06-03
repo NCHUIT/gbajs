@@ -285,10 +285,15 @@ document.addEventListener('webkitfullscreenchange', function() {
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-	var socket = io(), room_name;
+	var socket = io(), room_name, time_played;
 	
 	function join() {
 		if(room_name) socket.emit('join', room_name);
+	}
+	function show_time_played() {
+		var seconds = time_played % 60;
+		var minutes = (time_played - seconds) / 60;
+		document.getElementById('time_played').innerHTML = (minutes < 10 ? '0' : '') + minutes + (seconds < 10 ? ':0' : ':') + seconds;
 	}
 	function join_and_run(file) {
 		room_name = prompt("Room name:");
@@ -300,7 +305,11 @@ document.addEventListener('webkitfullscreenchange', function() {
 			// console.log(event);
 			gba.keypad.keyboardHandler(event);
 		});
-	}
+		
+		time_played = 0;
+		setInterval(function(){ time_played++; show_time_played(); }, 1000);
+	} 
+
 	if(navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) && confirm("Go to controller side?"))
 		document.location = "controller/index.html"
 </script>
@@ -329,7 +338,11 @@ document.addEventListener('webkitfullscreenchange', function() {
 			<p>Sound</p>
 			<input type="range" min="0" max="1" value="1" step="any" onchange="setVolume(this.value)" oninput="setVolume(this.value)">
 		</div>
-		<p id="room_name"></p>
+		<p>
+			<span id="room_name"></span>
+			►
+			<span id="time_played"></span>
+		</p>
 		<p id="openDebug" onclick="enableDebug()">Debugger</p>
 	</div>
 </section>
